@@ -1,0 +1,17 @@
+name: Package Version
+description: "Parse version information from a package.json file"
+outputs:
+	major:
+		description: Major version number
+	minor:
+		description: Minor version number
+	patch:
+		description: Patch version number
+	tag:
+		description: 'Prerelease identifier, for example "alpha", "beta", "rc", etc. Default "latest"'
+runs:
+  using: node20
+  main: ./dist/index.js
+branding:
+  icon: package
+  color: red
