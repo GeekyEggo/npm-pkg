@@ -39,3 +39,20 @@ jobs:
 
       - name: "🧪 Test"
         run: npm run test
+
+  Test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: pkg
+        uses: ./
+        with:
+          path: ./tests/package.test.json
+
+      - run: "[ ${{ steps.pkg.version-major }} -eq 1 ];"
+      - run: "[ ${{ steps.pkg.version-minor }} -eq 2 ];"
+      - run: "[ ${{ steps.pkg.version-patch }} -eq 3 ];"
+      - run: '[ ${{ steps.pkg.version-tag }} -eq "beta" ];'

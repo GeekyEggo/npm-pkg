@@ -26918,7 +26918,7 @@ const SemVer$5 = semver$2;
 const parse$1 = parse_1;
 const { safeRe: re, t } = reExports;
 
-const coerce$2 = (version, options) => {
+const coerce$1 = (version, options) => {
   if (version instanceof SemVer$5) {
     return version
   }
@@ -26973,7 +26973,7 @@ const coerce$2 = (version, options) => {
 
   return parse$1(`${major}.${minor}.${patch}${prerelease}${build}`, options)
 };
-var coerce_1 = coerce$2;
+var coerce_1 = coerce$1;
 
 var iterator;
 var hasRequiredIterator;
@@ -29032,7 +29032,7 @@ const neq = neq_1;
 const gte = gte_1;
 const lte = lte_1;
 const cmp = cmp_1;
-const coerce$1 = coerce_1;
+const coerce = coerce_1;
 const Comparator = requireComparator();
 const Range = requireRange();
 const satisfies = satisfies_1;
@@ -29070,7 +29070,7 @@ var semver = {
   gte,
   lte,
   cmp,
-  coerce: coerce$1,
+  coerce,
   Comparator,
   Range,
   satisfies,
@@ -29096,6 +29096,25 @@ var semver = {
 };
 
 var semver$1 = /*@__PURE__*/getDefaultExportFromCjs(semver);
+
+/**
+ * Sets the outputs associated with the package's version field.
+ * @param pkg Package information.
+ */
+function setVersionOutput(pkg) {
+    // Parse and validate the version.
+    const version = semver$1.parse(pkg.version);
+    if (version === null) {
+        throw new TypeError(`Failed to parse version: ${pkg.version}`);
+    }
+    // Output the version information.
+    coreExports.setOutput("version-major", version.major);
+    coreExports.setOutput("version-minor", version.minor);
+    coreExports.setOutput("version-patch", version.patch);
+    // Output the tag (first preid).
+    const [tag] = version.prerelease;
+    coreExports.setOutput("version-tag", tag !== undefined ? tag : "latest");
+}
 
 var util;
 (function (util) {
@@ -29254,10 +29273,6 @@ const ZodIssueCode = util.arrayToEnum([
     "not_multiple_of",
     "not_finite",
 ]);
-const quotelessJson = (obj) => {
-    const json = JSON.stringify(obj, null, 2);
-    return json.replace(/"([^"]+)":/g, "$1:");
-};
 class ZodError extends Error {
     constructor(issues) {
         super();
@@ -29494,9 +29509,6 @@ const errorMap = (issue, _ctx) => {
 };
 
 let overrideErrorMap = errorMap;
-function setErrorMap(map) {
-    overrideErrorMap = map;
-}
 function getErrorMap() {
     return overrideErrorMap;
 }
@@ -29529,7 +29541,6 @@ const makeIssue = (params) => {
         message: errorMessage,
     };
 };
-const EMPTY_PATH = [];
 function addIssueToContext(ctx, issueData) {
     const overrideMap = getErrorMap();
     const issue = makeIssue({
@@ -33000,7 +33011,6 @@ ZodNaN.create = (params) => {
         ...processCreateParams(params),
     });
 };
-const BRAND = Symbol("zod_brand");
 class ZodBranded extends ZodType {
     _parse(input) {
         const { ctx } = this._processInputParams(input);
@@ -33092,37 +33102,9 @@ ZodReadonly.create = (type, params) => {
         ...processCreateParams(params),
     });
 };
-function custom(check, params = {}, 
-/**
- * @deprecated
- *
- * Pass `fatal` into the params object instead:
- *
- * ```ts
- * z.string().custom((val) => val.length > 5, { fatal: false })
- * ```
- *
- */
-fatal) {
-    if (check)
-        return ZodAny.create().superRefine((data, ctx) => {
-            var _a, _b;
-            if (!check(data)) {
-                const p = typeof params === "function"
-                    ? params(data)
-                    : typeof params === "string"
-                        ? { message: params }
-                        : params;
-                const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-                const p2 = typeof p === "string" ? { message: p } : p;
-                ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
-            }
-        });
-    return ZodAny.create();
-}
-const late = {
+({
     object: ZodObject.lazycreate,
-};
+});
 var ZodFirstPartyTypeKind;
 (function (ZodFirstPartyTypeKind) {
     ZodFirstPartyTypeKind["ZodString"] = "ZodString";
@@ -33162,189 +33144,59 @@ var ZodFirstPartyTypeKind;
     ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
     ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
 })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
-const instanceOfType = (
-// const instanceOfType = <T extends new (...args: any[]) => any>(
-cls, params = {
-    message: `Input not instance of ${cls.name}`,
-}) => custom((data) => data instanceof cls, params);
 const stringType = ZodString.create;
-const numberType = ZodNumber.create;
-const nanType = ZodNaN.create;
-const bigIntType = ZodBigInt.create;
-const booleanType = ZodBoolean.create;
-const dateType = ZodDate.create;
-const symbolType = ZodSymbol.create;
-const undefinedType = ZodUndefined.create;
-const nullType = ZodNull.create;
-const anyType = ZodAny.create;
-const unknownType = ZodUnknown.create;
-const neverType = ZodNever.create;
-const voidType = ZodVoid.create;
-const arrayType = ZodArray.create;
+ZodNumber.create;
+ZodNaN.create;
+ZodBigInt.create;
+ZodBoolean.create;
+ZodDate.create;
+ZodSymbol.create;
+ZodUndefined.create;
+ZodNull.create;
+ZodAny.create;
+ZodUnknown.create;
+ZodNever.create;
+ZodVoid.create;
+ZodArray.create;
 const objectType = ZodObject.create;
-const strictObjectType = ZodObject.strictCreate;
-const unionType = ZodUnion.create;
-const discriminatedUnionType = ZodDiscriminatedUnion.create;
-const intersectionType = ZodIntersection.create;
-const tupleType = ZodTuple.create;
-const recordType = ZodRecord.create;
-const mapType = ZodMap.create;
-const setType = ZodSet.create;
-const functionType = ZodFunction.create;
-const lazyType = ZodLazy.create;
-const literalType = ZodLiteral.create;
-const enumType = ZodEnum.create;
-const nativeEnumType = ZodNativeEnum.create;
-const promiseType = ZodPromise.create;
-const effectsType = ZodEffects.create;
-const optionalType = ZodOptional.create;
-const nullableType = ZodNullable.create;
-const preprocessType = ZodEffects.createWithPreprocess;
-const pipelineType = ZodPipeline.create;
-const ostring = () => stringType().optional();
-const onumber = () => numberType().optional();
-const oboolean = () => booleanType().optional();
-const coerce = {
-    string: ((arg) => ZodString.create({ ...arg, coerce: true })),
-    number: ((arg) => ZodNumber.create({ ...arg, coerce: true })),
-    boolean: ((arg) => ZodBoolean.create({
-        ...arg,
-        coerce: true,
-    })),
-    bigint: ((arg) => ZodBigInt.create({ ...arg, coerce: true })),
-    date: ((arg) => ZodDate.create({ ...arg, coerce: true })),
-};
-const NEVER = INVALID;
+ZodObject.strictCreate;
+ZodUnion.create;
+ZodDiscriminatedUnion.create;
+ZodIntersection.create;
+ZodTuple.create;
+ZodRecord.create;
+ZodMap.create;
+ZodSet.create;
+ZodFunction.create;
+ZodLazy.create;
+ZodLiteral.create;
+ZodEnum.create;
+ZodNativeEnum.create;
+ZodPromise.create;
+ZodEffects.create;
+ZodOptional.create;
+ZodNullable.create;
+ZodEffects.createWithPreprocess;
+ZodPipeline.create;
 
-var z = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    defaultErrorMap: errorMap,
-    setErrorMap: setErrorMap,
-    getErrorMap: getErrorMap,
-    makeIssue: makeIssue,
-    EMPTY_PATH: EMPTY_PATH,
-    addIssueToContext: addIssueToContext,
-    ParseStatus: ParseStatus,
-    INVALID: INVALID,
-    DIRTY: DIRTY,
-    OK: OK,
-    isAborted: isAborted,
-    isDirty: isDirty,
-    isValid: isValid,
-    isAsync: isAsync,
-    get util () { return util; },
-    get objectUtil () { return objectUtil; },
-    ZodParsedType: ZodParsedType,
-    getParsedType: getParsedType,
-    ZodType: ZodType,
-    datetimeRegex: datetimeRegex,
-    ZodString: ZodString,
-    ZodNumber: ZodNumber,
-    ZodBigInt: ZodBigInt,
-    ZodBoolean: ZodBoolean,
-    ZodDate: ZodDate,
-    ZodSymbol: ZodSymbol,
-    ZodUndefined: ZodUndefined,
-    ZodNull: ZodNull,
-    ZodAny: ZodAny,
-    ZodUnknown: ZodUnknown,
-    ZodNever: ZodNever,
-    ZodVoid: ZodVoid,
-    ZodArray: ZodArray,
-    ZodObject: ZodObject,
-    ZodUnion: ZodUnion,
-    ZodDiscriminatedUnion: ZodDiscriminatedUnion,
-    ZodIntersection: ZodIntersection,
-    ZodTuple: ZodTuple,
-    ZodRecord: ZodRecord,
-    ZodMap: ZodMap,
-    ZodSet: ZodSet,
-    ZodFunction: ZodFunction,
-    ZodLazy: ZodLazy,
-    ZodLiteral: ZodLiteral,
-    ZodEnum: ZodEnum,
-    ZodNativeEnum: ZodNativeEnum,
-    ZodPromise: ZodPromise,
-    ZodEffects: ZodEffects,
-    ZodTransformer: ZodEffects,
-    ZodOptional: ZodOptional,
-    ZodNullable: ZodNullable,
-    ZodDefault: ZodDefault,
-    ZodCatch: ZodCatch,
-    ZodNaN: ZodNaN,
-    BRAND: BRAND,
-    ZodBranded: ZodBranded,
-    ZodPipeline: ZodPipeline,
-    ZodReadonly: ZodReadonly,
-    custom: custom,
-    Schema: ZodType,
-    ZodSchema: ZodType,
-    late: late,
-    get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
-    coerce: coerce,
-    any: anyType,
-    array: arrayType,
-    bigint: bigIntType,
-    boolean: booleanType,
-    date: dateType,
-    discriminatedUnion: discriminatedUnionType,
-    effect: effectsType,
-    'enum': enumType,
-    'function': functionType,
-    'instanceof': instanceOfType,
-    intersection: intersectionType,
-    lazy: lazyType,
-    literal: literalType,
-    map: mapType,
-    nan: nanType,
-    nativeEnum: nativeEnumType,
-    never: neverType,
-    'null': nullType,
-    nullable: nullableType,
-    number: numberType,
-    object: objectType,
-    oboolean: oboolean,
-    onumber: onumber,
-    optional: optionalType,
-    ostring: ostring,
-    pipeline: pipelineType,
-    preprocess: preprocessType,
-    promise: promiseType,
-    record: recordType,
-    set: setType,
-    strictObject: strictObjectType,
-    string: stringType,
-    symbol: symbolType,
-    transformer: effectsType,
-    tuple: tupleType,
-    'undefined': undefinedType,
-    union: unionType,
-    unknown: unknownType,
-    'void': voidType,
-    NEVER: NEVER,
-    ZodIssueCode: ZodIssueCode,
-    quotelessJson: quotelessJson,
-    ZodError: ZodError
-});
-
+const DEFAULT_PATH = "./package.json";
 /**
- * Gets the version from the package specified in the path.
+ * Gets the package information from the specified path.
  * @param path Path to the package.json file.
- * @returns The version.
+ * @returns The package information.
  */
-async function getVersion(path = "./package.json") {
-    const pkg = z.object({
-        version: z.string(),
+async function getPackage(path) {
+    path = path === undefined || path === "" ? DEFAULT_PATH : path;
+    const pkg = objectType({
+        version: stringType(),
     });
     try {
         const contents = await promises.readFile(path, { encoding: "utf-8" });
         const json = JSON.parse(contents);
-        return pkg.parse(json).version;
+        return pkg.parse(json);
     }
-    catch (err) {
-        coreExports.error(`Failed to read contents of ${path}`);
-        coreExports.setFailed(err);
-        return undefined;
+    catch (cause) {
+        throw new Error(`Failed to read contents of ${path}`, { cause });
     }
 }
 
@@ -33352,26 +33204,14 @@ async function getVersion(path = "./package.json") {
  * Runs the action.
  */
 async function run() {
-    // Get the version from the package.
-    const pkgVersion = await getVersion();
-    if (pkgVersion === undefined) {
-        return;
+    try {
+        const path = coreExports.getInput("path", { required: false });
+        const pkg = await getPackage(path);
+        setVersionOutput(pkg);
     }
-    // Parse and validate the version.
-    const version = semver$1.parse(pkgVersion);
-    if (version === null) {
-        coreExports.setFailed(`Failed to parse version: ${pkgVersion}`);
-        return;
+    catch (err) {
+        coreExports.setFailed(err);
     }
-    // Output the version information.
-    coreExports.setOutput("version.major", version.major);
-    coreExports.setOutput("version.minor", version.minor);
-    coreExports.setOutput("version.patch", version.patch);
-    // Output the prerelease identifier
-    const [maybeTag] = version.prerelease;
-    const tag = typeof maybeTag === "string" ? maybeTag : "latest";
-    coreExports.setOutput("version.tag", tag);
 }
-run();
 
-exports.run = run;
+run();

@@ -1,19 +1,13 @@
-import * as core from "@actions/core";
 import * as fs from "node:fs/promises";
-import { ZodError } from "zod";
 
-import { getVersion } from "../pkg";
+import { getPackage } from "../pkg";
 
-jest.mock("@actions/core");
 jest.mock("node:fs/promises");
 
-describe("getVersion", () => {
-	// @ts-expect-error noop process.exit
-	beforeAll(() => jest.spyOn(process, "exit").mockImplementation(() => {}));
-
+describe("getPackage", () => {
 	test("success", async () => {
 		// Arrange.
-		jest.spyOn(fs, "readFile").mockReturnValue(
+		const spyOnReadFile = jest.spyOn(fs, "readFile").mockReturnValue(
 			Promise.resolve(
 				JSON.stringify({
 					version: "1.2.3",
@@ -22,34 +16,60 @@ describe("getVersion", () => {
 		);
 
 		// Act, assert.
-		expect(getVersion()).resolves.toBe("1.2.3");
+		expect(getPackage()).resolves.toEqual({
+			version: "1.2.3",
+		});
+	});
+
+	test("default path (undefined)", async () => {
+		// Arrange.
+		const spyOnReadFile = jest.spyOn(fs, "readFile").mockReturnValue(
+			Promise.resolve(
+				JSON.stringify({
+					version: "1.2.3",
+				}),
+			),
+		);
+
+		// Act.
+		await getPackage("./other.json");
+
+		// Assert.
+		expect(spyOnReadFile).toHaveBeenCalledTimes(1);
+		expect(spyOnReadFile).toHaveBeenCalledWith("./other.json", { encoding: "utf-8" });
+	});
+
+	test("default path (empty)", async () => {
+		// Arrange.
+		const spyOnReadFile = jest.spyOn(fs, "readFile").mockReturnValue(
+			Promise.resolve(
+				JSON.stringify({
+					version: "1.2.3",
+				}),
+			),
+		);
+
+		// Act.
+		await getPackage("");
+
+		// Assert.
+		expect(spyOnReadFile).toHaveBeenCalledTimes(1);
+		expect(spyOnReadFile).toHaveBeenCalledWith("./package.json", { encoding: "utf-8" });
 	});
 
 	test("invalid json fails", async () => {
-		// Arrange
+		// Arrange.
 		jest.spyOn(fs, "readFile").mockReturnValue(Promise.resolve('{"invalid"'));
 
-		// Act.
-		await getVersion();
-
-		// Assert.
-		expect(core.error).toHaveBeenCalledTimes(1);
-		expect(core.error).toHaveBeenCalledWith("Failed to read contents of ./package.json");
-		expect(core.setFailed).toHaveBeenCalledTimes(1);
-		expect(core.setFailed).toHaveBeenCalledWith(expect.any(SyntaxError));
+		// Act, assert.
+		await expect(getPackage()).rejects.toThrow("Failed to read contents of ./package.json");
 	});
 
 	test("missing version fails", async () => {
 		// Arrange.
 		jest.spyOn(fs, "readFile").mockReturnValue(Promise.resolve(JSON.stringify({})));
 
-		// Act.
-		await getVersion();
-
-		// Assert.
-		expect(core.error).toHaveBeenCalledTimes(1);
-		expect(core.error).toHaveBeenCalledWith("Failed to read contents of ./package.json");
-		expect(core.setFailed).toHaveBeenCalledTimes(1);
-		expect(core.setFailed).toHaveBeenCalledWith(expect.any(ZodError));
+		// Act, assert.
+		await expect(getPackage()).rejects.toThrow("Failed to read contents of ./package.json");
 	});
 });

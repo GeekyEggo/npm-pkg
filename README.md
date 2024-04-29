@@ -2,13 +2,13 @@
 
 # Node.js Package Information
 
-A GitHub Action for parsing information from a package.json file, that aims to streamline accessing information contained within it, and polyfill where `npm pkg get` falls short.
+A GitHub Action for retrieving information from a package.json file, similar to `npm pkg get`, with some extra ✨.
 
 ## 📖 Use Case
 
-Publishing a prerelease version of a package can be tricky. By default, `npm publish` ignores the prerelease identifier, and doesn't take into consideration the prerelease identifier defined on the package's version field.
+Publishing a prerelease version of a package can be tricky. By default, `npm publish` ignores the prerelease identifier, and doesn't take into consideration the [tag](https://docs.npmjs.com/cli/v10/commands/npm-publish#tag) defined in the package's version field.
 
-Thankfully, this can be easily solved using the `version.tag` output; for example, given a version of `1.2.3-beta.0`, our workflow can access the tag directly:
+Using `@geekyeggo/npm-pkg` solves this by parsing the `version.tag` from the package.json file; for example, given a version of `1.2.3-beta.0`, a workflow can access the tag directly:
 
 ```
 npm publish --tag {{ steps.output.pkg.version.tag }}
@@ -18,28 +18,32 @@ npm publish --tag {{ steps.output.pkg.version.tag }}
 
 See [action.yml](action.yml)
 
+<!-- prettier-ignore-start -->
 ```yml
 steps:
   - uses: actions/checkout@v4
 
-  - name: info
-    uses: geekyeggo/npm-package-info@v1
+  - name: pkg
+    uses: geekyeggo/npm-pkg@v1
 
-  - uses: actions/setup-node@v4
-    with:
-      node-version: "20"
-      registry-url: "https://registry.npmjs.org"
-
-  - run: npm publish --provenance --access public --tag ${{ steps.version.info.tag }}
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  # When version is "1.0.0-rc.1", the tag output will be "rc".
+  - run: echo ${{ steps.pkg.version.tag }}
 ```
+<!-- prettier-ignore-end -->
+
+## 📥 Inputs
+
+| Name   | Description                                                         |
+| ------ | ------------------------------------------------------------------- |
+| `path` | Optional path to the package.json file; default `"./package.json"`. |
 
 ## 📤 Outputs
 
-| Name            | Description                                                                      |
-| --------------- | -------------------------------------------------------------------------------- |
-| `version.major` | Major version number                                                             |
-| `version.minor` | Minor version number                                                             |
-| `version.patch` | Patch version number                                                             |
-| `version.tag`   | Prerelease identifier, for example `alpha`, `beta`, `rc`, etc. Default `latest`. |
+| Name            | Description                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
+| `version-major` | Major version number                                                                 |
+| `version-minor` | Minor version number                                                                 |
+| `version-patch` | Patch version number                                                                 |
+| `version-tag`   | Tag parsed from the prerelease identifier, for example `"beta"`; default `"latest"`. |
+
+Interested in more outputs? Consider creating [a pull request](https://github.com/geekyeggo/npm-pkg/compare). 💙

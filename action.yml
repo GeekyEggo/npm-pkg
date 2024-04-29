@@ -1,17 +1,28 @@
-name: Package Version
-description: "Parse version information from a package.json file"
-outputs:
-	major:
-		description: Major version number
-	minor:
-		description: Minor version number
-	patch:
-		description: Patch version number
-	tag:
-		description: 'Prerelease identifier, for example "alpha", "beta", "rc", etc. Default "latest"'
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+
+name: "Node.js Package Information"
+description: "Retrieve information from a package.json file"
+
 runs:
   using: node20
   main: ./dist/index.js
+
 branding:
   icon: package
   color: red
+
+inputs:
+  path:
+    description: "Path to the package.json file"
+    required: false
+    default: "./package.json"
+
+outputs:
+  version-major:
+    description: Major version number
+  version-minor:
+    description: Minor version number
+  version-patch:
+    description: Patch version number
+  version-tag:
+     description: 'Tag parsed from the prerelease identifier, for example "beta". Default "latest"'
