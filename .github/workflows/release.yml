@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Release
+
+on:
+  push:
+    tags-ignore:
+      - "v[0-9]+"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  Release:
+    permissions:
+      contents: "write"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "📖 Retrieve package info"
+        id: pkg
+        uses: ./
+    
+      - name: "🏷️ Tag"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -af v${{ steps.pkg.outputs.version-major }} -m ${{ github.ref_name }}
+          git push origin v${{ steps.pkg.outputs.version-major }} --force
