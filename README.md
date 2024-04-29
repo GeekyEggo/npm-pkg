@@ -23,7 +23,7 @@ See [action.yml](action.yml)
 steps:
   - uses: actions/checkout@v4
 
-  - name: pkg
+  - id: pkg
     uses: geekyeggo/npm-pkg@v1
 
   # When version is "1.0.0-rc.1", the tag output will be "rc".

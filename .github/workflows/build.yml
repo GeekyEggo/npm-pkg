@@ -47,7 +47,7 @@ jobs:
       - name: "📥 Checkout"
         uses: actions/checkout@v4
 
-      - name: pkg
+      - id: pkg
         uses: ./
         with:
           path: ./tests/package.test.json
