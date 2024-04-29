@@ -27,7 +27,7 @@ steps:
     uses: geekyeggo/npm-pkg@v1
 
   # When version is "1.0.0-rc.1", the tag output will be "rc".
-  - run: echo ${{ steps.pkg.version.tag }}
+  - run: echo ${{ steps.pkg.outputs.version-tag }}
 ```
 <!-- prettier-ignore-end -->
 

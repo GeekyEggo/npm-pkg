@@ -52,7 +52,7 @@ jobs:
         with:
           path: ./tests/package.test.json
 
-      - run: "[ ${{ steps.pkg.version-major }} -eq 1 ];"
-      - run: "[ ${{ steps.pkg.version-minor }} -eq 2 ];"
-      - run: "[ ${{ steps.pkg.version-patch }} -eq 3 ];"
-      - run: '[ ${{ steps.pkg.version-tag }} -eq "beta" ];'
+      - run: "[ ${{ steps.pkg.outputs.version-major }} -eq 1 ];"
+      - run: "[ ${{ steps.pkg.outputs.version-minor }} -eq 2 ];"
+      - run: "[ ${{ steps.pkg.outputs.version-patch }} -eq 3 ];"
+      - run: '[ ${{ steps.pkg.outputs.version-tag }} -eq "beta" ];'
