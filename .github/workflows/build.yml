@@ -47,12 +47,20 @@ jobs:
       - name: "📥 Checkout"
         uses: actions/checkout@v4
 
-      - id: pkg
+      - name: "📖 Retrieve package information"
+        id: pkg
         uses: ./
         with:
           path: ./tests/package.test.json
 
-      - run: "[ ${{ steps.pkg.outputs.version-major }} = 1 ];"
-      - run: "[ ${{ steps.pkg.outputs.version-minor }} = 2 ];"
-      - run: "[ ${{ steps.pkg.outputs.version-patch }} = 3 ];"
-      - run: "[ ${{ steps.pkg.outputs.version-tag }} = beta ];"
+      - name: "version-major"
+        run: "[ ${{ steps.pkg.outputs.version-major }} = 1 ];"
+
+      - name: "version-minor"
+        run: "[ ${{ steps.pkg.outputs.version-minor }} = 2 ];"
+
+      - name: "version-patch"
+        run: "[ ${{ steps.pkg.outputs.version-patch }} = 3 ];"
+
+      - name: "version-tag"
+        run: "[ ${{ steps.pkg.outputs.version-tag }} = beta ];"
