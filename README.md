@@ -11,7 +11,7 @@ Publishing a prerelease version of a package can be tricky. By default, `npm pub
 Using `@geekyeggo/npm-pkg` solves this by parsing the `version.tag` from the package.json file; for example, given a version of `1.2.3-beta.0`, a workflow can access the tag directly:
 
 ```
-npm publish --tag {{ steps.output.pkg.version.tag }}
+npm publish --tag {{ steps.pkg.outputs.version-tag }}
 ```
 
 ## ⚡ Usage
@@ -23,8 +23,8 @@ See [action.yml](action.yml)
 steps:
   - uses: actions/checkout@v4
 
-  - id: pkg
-    uses: geekyeggo/npm-pkg@v1
+  - uses: geekyeggo/npm-pkg@v1
+    id: pkg
 
   # When version is "1.0.0-rc.1", the tag output will be "rc".
   - run: echo ${{ steps.pkg.outputs.version-tag }}
