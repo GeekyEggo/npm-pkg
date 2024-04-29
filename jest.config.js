@@ -1,0 +1,27 @@
+/*
+ * For a detailed explanation regarding each configuration property and type check, visit:
+ * https://jestjs.io/docs/configuration
+ */
+const config = {
+	clearMocks: true,
+	collectCoverageFrom: ["src/**/*.ts", "!<rootDir>/node_modules/"],
+	coverageReporters: ["json-summary", "text"],
+	maxWorkers: 1,
+	verbose: true,
+	roots: ["src"],
+	transform: {
+		"^.+\\.ts$": [
+			"@swc/jest",
+			{
+				jsc: {
+					parser: {
+						syntax: "typescript",
+						decorators: true,
+					},
+				},
+			},
+		],
+	},
+};
+
+export default config;
