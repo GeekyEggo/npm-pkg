@@ -55,4 +55,4 @@ jobs:
       - run: "[ ${{ steps.pkg.outputs.version-major }} -eq 1 ];"
       - run: "[ ${{ steps.pkg.outputs.version-minor }} -eq 2 ];"
       - run: "[ ${{ steps.pkg.outputs.version-patch }} -eq 3 ];"
-      - run: '[ ${{ steps.pkg.outputs.version-tag }} -eq "beta" ];'
+      - run: '[ "${{ steps.pkg.outputs.version-tag }}" -eq "beta" ];'
