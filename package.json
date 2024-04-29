@@ -1,7 +1,7 @@
 {
-    "name": "parse-semver",
-    "description": "A GitHub Action for parsing version information from a package.json file.",
-    "version": "1.0.0",
+    "name": "npm-pkg",
+    "description": "A GitHub Action for retrieving information from a package.json file.",
+    "version": "0.0.1",
     "main": "src/index.ts",
     "type": "module",
     "scripts": {
@@ -13,16 +13,15 @@
     },
     "prettier": "@elgato/prettier-config",
     "keywords": [
-        "github",
         "github-actions",
-        "parse-semver",
-        "npm-publish"
+        "npm",
+        "package"
     ],
     "author": "GeekyEggo",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/geekyeggo/parse-semver"
+        "url": "https://github.com/GeekyEggo/npm-pkg"
     },
     "devDependencies": {
         "@actions/core": "^1.10.1",
