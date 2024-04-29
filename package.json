@@ -1,7 +1,7 @@
 {
     "name": "npm-pkg",
     "description": "A GitHub Action for retrieving information from a package.json file.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "src/index.ts",
     "type": "module",
     "scripts": {
